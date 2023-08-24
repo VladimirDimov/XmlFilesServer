@@ -2,6 +2,8 @@
 {
     public class AppSettings
     {
+        public string FileStoreRelativePath { get; set; }
+
         public FileSettings FileSettings { get; set; }
     }
 

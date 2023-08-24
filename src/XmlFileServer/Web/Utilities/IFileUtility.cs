@@ -1,7 +1,9 @@
-﻿namespace Web.Utilities
+﻿using Web.Models;
+
+namespace Web.Utilities
 {
     public interface IFileUtility
     {
-        Task SaveFileAsync(string fileName, string content, bool overwrite);
+        Task<FileSaveResult> SaveFileAsync(string fileName, string content, bool overwrite);
     }
 }

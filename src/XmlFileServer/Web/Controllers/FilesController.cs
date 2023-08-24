@@ -1,15 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection.PortableExecutable;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Serialization;
-using System.Xml.Serialization;
 using Web.Models;
-using System.Dynamic;
-using System.Xml.Linq;
-using System.Xml;
-using Newtonsoft.Json;
 using Web.Utilities;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Web.Controllers
 {
@@ -33,7 +24,7 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public async Task<ResponseModel<List<FileUploadResultModel>>> Upload([FromForm] FilesUploadModel model)
+        public async Task<ResponseModel<FileSaveResult[]>> Upload([FromForm] FilesUploadModel model)
         {
             var fileProcessingTasks = model.Files
                 .Select(async file =>
@@ -42,13 +33,13 @@ namespace Web.Controllers
                     var json = await _serializationUtility.XmlToJsonAsync(readStream);
                     var fileName = file.FileName;
 
-                    await _fileUtility.SaveFileAsync(fileName, json, model.OverwriteExisting);
+                    return await _fileUtility.SaveFileAsync(fileName, json, model.OverwriteExisting);
                 });
 
             // process the files in parallel. As an alternative Task.Parallel library may be used
-            await Task.WhenAll(fileProcessingTasks);
+            var fileResults = await Task.WhenAll(fileProcessingTasks);
 
-            return new ResponseModel<List<FileUploadResultModel>>(null);
+            return new ResponseModel<FileSaveResult[]>(fileResults);
         }
 
         [HttpGet(Name = "GetFiles")]
