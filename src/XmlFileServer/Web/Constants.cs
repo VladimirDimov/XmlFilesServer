@@ -2,9 +2,14 @@
 {
     public class Constants
     {
+        public class CommonConstants
+        {
+            public const string XML_FILE_EXTENSION = ".xml";
+        }
+
         public class FileTypes
         {
-            public const string TextXml = "text/xml";
+            public const string TEXT_XML = "text/xml";
         }
     }
 }

@@ -30,5 +30,17 @@ namespace Web
                 options.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             });
         }
+
+        public static void AddConfiguration(this WebApplicationBuilder builder)
+        {
+            var config = new ConfigurationBuilder()
+                            .AddJsonFile("appsettings.json", optional: false)
+                            .Build();
+
+            var settings = new AppSettings();
+            config.GetSection("appSettings").Bind(settings);
+
+            builder.Services.AddSingleton<AppSettings>(settings);
+        }
     }
 }

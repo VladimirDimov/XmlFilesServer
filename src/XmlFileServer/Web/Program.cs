@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Options;
+
 namespace Web
 {
     public class Program
@@ -8,6 +10,7 @@ namespace Web
 
             builder.AddDependencies();
             builder.AddFluentValidation();
+            builder.AddConfiguration();
 
             var app = builder.Build();
 
