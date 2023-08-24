@@ -23,8 +23,8 @@ namespace Web.Controllers
             _logger = logger;
         }
 
-        [HttpPost]
-        public async Task<ResponseModel<FileSaveResult[]>> Upload([FromForm] FilesUploadModel model)
+        [HttpPost(Name = "Upload Files")]
+        public async Task<ResponseModel<FileSaveResult[]>> UploadAsync([FromForm] FilesUploadModel model)
         {
             var fileProcessingTasks = model.Files
                 .Select(async file =>
@@ -42,10 +42,17 @@ namespace Web.Controllers
             return new ResponseModel<FileSaveResult[]>(fileResults);
         }
 
-        [HttpGet(Name = "GetFiles")]
-        public ResponseModel<List<FileInfoModel>> Get()
+        [HttpGet(Name = "Get Files")]
+        public async Task<IActionResult> GetAsync([FromQuery]GetFileModel model)
         {
-            return new ResponseModel<List<FileInfoModel>>(new List<FileInfoModel> { new FileInfoModel() });
+            var fileByteArray = await _fileUtility.GetFileByteArray(model.FileName);
+
+            if (fileByteArray is null)
+            {
+                return NotFound();
+            }
+
+            return File(fileByteArray, "text/json", model.FileName);
         }
     }
 }
