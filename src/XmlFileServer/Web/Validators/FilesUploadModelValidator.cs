@@ -9,7 +9,7 @@
     {
         private const string AT_LEAST_ONE_FILE_REQUIRED = "At least one file must be provided";
         private const string INVALID_FILE_TYPE = "Invalid file type: {0}. Only {1} is supported";
-        private const string FILE_SIZE_LIMIT = "{0} exceeds the limit of {0}MB";
+        private const string FILE_SIZE_LIMIT = "{0} exceeds the limit of {1} MB";
         private const string FILE_NAME_LIMIT = "File name length must be between {0} and {1}";
         private const string FILE_EXTENSION = "File extension must be .xml";
 
