@@ -4,9 +4,8 @@ namespace Web.Models
 {
     public class FilesUploadModel
     {
-        public bool OverwriteExisting { get; set; }
+        public bool OverwriteExisting { get; set; } = false;
 
-        [Required]
-        public ICollection<IFormFile>? Files { get; set; }
+        public IEnumerable<IFormFile>? Files { get; set; }
     }
 }

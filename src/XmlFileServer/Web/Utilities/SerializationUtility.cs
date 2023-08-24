@@ -28,7 +28,8 @@ namespace Web.Utilities
         private string XmlToJson(string xml)
         {
             var doc = XDocument.Parse(xml);
-            return JsonConvert.SerializeXNode(doc, Newtonsoft.Json.Formatting.Indented);
+
+            return JsonConvert.SerializeXNode(doc, Formatting.Indented);
         }
     }
 }

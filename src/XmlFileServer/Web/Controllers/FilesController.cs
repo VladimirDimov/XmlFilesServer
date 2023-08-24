@@ -18,14 +18,17 @@ namespace Web.Controllers
     public class FilesController : ControllerBase
     {
         private readonly ISerializationUtility _serializationUtility;
+        private readonly IFileUtility _fileUtility;
         private readonly ILogger<FilesController> _logger;
 
 
         public FilesController(
             ISerializationUtility serializationUtility,
+            IFileUtility fileUtility,
             ILogger<FilesController> logger)
         {
             _serializationUtility = serializationUtility;
+            _fileUtility = fileUtility;
             _logger = logger;
         }
 
@@ -38,6 +41,8 @@ namespace Web.Controllers
                     using var readStream = file.OpenReadStream();
                     var json = await _serializationUtility.XmlToJsonAsync(readStream);
                     var fileName = file.FileName;
+
+                    await _fileUtility.SaveFileAsync(fileName, json, model.OverwriteExisting);
                 });
 
             // process the files in parallel. As an alternative Task.Parallel library may be used
