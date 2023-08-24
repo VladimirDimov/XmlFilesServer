@@ -24,8 +24,11 @@ namespace Web.Controllers
         }
 
         [HttpPost(Name = "Upload Files")]
-        public async Task<ResponseModel<FileSaveResult[]>> UploadAsync([FromForm] FilesUploadModel model)
+        public async Task<IActionResult> UploadAsync([FromForm] FilesUploadModel model)
         {
+            if (model.Files is null)
+                return BadRequest("Invalid null object");
+
             var fileProcessingTasks = model.Files
                 .Select(async file =>
                 {
@@ -39,11 +42,11 @@ namespace Web.Controllers
             // process the files in parallel. As an alternative Task.Parallel library may be used
             var fileResults = await Task.WhenAll(fileProcessingTasks);
 
-            return new ResponseModel<FileSaveResult[]>(fileResults);
+            return Ok(fileResults);
         }
 
         [HttpGet(Name = "Get Files")]
-        public async Task<IActionResult> GetAsync([FromQuery]GetFileModel model)
+        public async Task<IActionResult> GetAsync([FromQuery] GetFileModel model)
         {
             var fileByteArray = await _fileUtility.GetFileByteArray(model.FileName);
 
