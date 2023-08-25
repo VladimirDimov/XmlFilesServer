@@ -1,5 +1,8 @@
 using ApiTests.Helpers;
+using ApiTests.Models;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using System.Net;
 using Web.Models;
 
 namespace ApiTests
@@ -93,6 +96,22 @@ namespace ApiTests
             var responseContent = await getFileResponse.Content.ReadAsStringAsync();
 
             Assert.Equal(expectedJsonContent, responseContent, ignoreWhiteSpaceDifferences: true);
+        }
+
+        [Fact]
+        public async Task MaxAllowedNumberOfFilesShouldWorkAsExpected()
+        {
+            var model = new FilesUploadModel
+            {
+                OverwriteExisting = true,
+                Files = Enumerable.Range(1, 10).Select(i => _formFileHelper.FromXmlString("<a>some valid content</a>", "Files", $"file{i}.xml"))
+            };
+
+            var response = await _apiClient.FilesPostAsync(model);
+            var content = await response.Content.ReadAsStringAsync();
+
+            Assert.True(response.IsSuccessStatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         private async Task TestSuccessfulResponse(IEnumerable<TestFileContent> files, bool overwriteExisting)

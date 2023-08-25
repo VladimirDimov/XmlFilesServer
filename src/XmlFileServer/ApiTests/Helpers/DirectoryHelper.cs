@@ -11,9 +11,23 @@
 
         public void EmptyJsonOutputDirectory()
         {
-            foreach (var file in Directory.GetFiles(_settings.FileStoreLocation))
+            var retry = 0;
+
+            while (retry < 3)
             {
-                File.Delete(file);
+                try
+                {
+                    foreach (var file in Directory.GetFiles(_settings.FileStoreLocation))
+                    {
+                        File.Delete(file);
+                    }
+
+                    return;
+                }
+                catch
+                {
+                    Thread.Sleep(200 * retry);
+                }
             }
         }
     }

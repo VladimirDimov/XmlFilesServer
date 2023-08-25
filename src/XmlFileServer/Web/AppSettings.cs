@@ -9,6 +9,7 @@
 
     public class FileSettings
     {
+        public int MaxNumberOfFilesPerRequest { get; set; }
         public int MaxFileSizeInMegabytes { get; set; }
         public int MinFileNameLength { get; set; }
         public int MaxFileNameLength { get; set; }

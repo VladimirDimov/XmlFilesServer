@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Xml;
 using Web.Models;
 using Web.Utilities;
 
@@ -26,17 +27,27 @@ namespace Web.Controllers
         [HttpPost(Name = "Upload Files")]
         public async Task<IActionResult> UploadAsync([FromForm] FilesUploadModel model)
         {
-            if (model.Files is null)
+            if (model?.Files is null)
                 return BadRequest("Invalid null object");
 
             var fileProcessingTasks = model.Files
                 .Select(async file =>
                 {
                     using var readStream = file.OpenReadStream();
-                    var json = await _serializationUtility.XmlToJsonAsync(readStream);
+
                     var fileName = file.FileName;
 
-                    return await _fileUtility.SaveFileAsync(fileName, json, model.OverwriteExisting);
+                    try
+                    {
+                        var json = await _serializationUtility.XmlToJsonAsync(readStream);
+
+                        return await _fileUtility.SaveFileAsync(fileName, json, model.OverwriteExisting);
+                    }
+                    catch (XmlException)
+                    {
+                        return new FileSaveResult { IsSuccess = false, FileName = file.FileName, Error = "Invalid xml content" };
+                    }
+
                 });
 
             // process the files in parallel. As an alternative Task.Parallel library may be used

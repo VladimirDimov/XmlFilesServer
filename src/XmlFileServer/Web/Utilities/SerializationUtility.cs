@@ -16,7 +16,6 @@ namespace Web.Utilities
             return json;
         }
 
-
         public string JsonToXml(string json)
         {
             var doc = JsonConvert.DeserializeXNode(json)!;
