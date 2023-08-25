@@ -19,15 +19,17 @@ namespace ApiTests
         }
 
         [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public Task SingleFileUploadShouldReturnSuccessfulReponse(bool overwriteExisting)
+        [InlineData(true, "testFile1.xml")]
+        [InlineData(false, "testFile1.xml")]
+        [InlineData(true, "testFile1.a.b.c.xml")]
+        [InlineData(false, "testFile1......xml")]
+        public Task SingleFileUploadShouldReturnSuccessfulReponse(bool overwriteExisting, string fileName)
             => TestSuccessfulResponse(
                 new List<TestFileContent>
                 {
                     new TestFileContent
                     {
-                        FileName = "testFile1.xml",
+                        FileName = fileName,
                         Xml = "<a>123</a>"
                     }
                 },

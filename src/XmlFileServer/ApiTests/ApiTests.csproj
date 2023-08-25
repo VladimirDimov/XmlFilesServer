@@ -26,4 +26,22 @@
     <ProjectReference Include="..\Web\Web.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="XmlFiles\invalid_file.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="XmlFiles\mondial_1.7_MB.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="XmlFiles\nasa_24_MB.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="XmlFiles\note_1_KB.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="XmlFiles\supplier_29_KB.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

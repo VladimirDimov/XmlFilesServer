@@ -8,6 +8,7 @@
     public class FilesUploadModelValidator : AbstractValidator<FilesUploadModel>
     {
         private const string AT_LEAST_ONE_FILE_REQUIRED = "At least one file must be provided";
+        private const string ONLY_UNIQUE_FILE_NAMES_ALLOWED = "Only unique file names are allowed within a single request. The following files appear more than once: {0}";
         private const string INVALID_FILE_TYPE = "Invalid file type: {0}. Only {1} is supported";
         private const string FILE_SIZE_LIMIT = "{0} exceeds the limit of {1} MB";
         private const string FILE_NAME_LIMIT = "File name length must be between {0} and {1}";
@@ -20,6 +21,12 @@
             RuleFor(m => m.Files)
                 .Must(files => files?.Any() == true)
                 .WithMessage(AT_LEAST_ONE_FILE_REQUIRED);
+
+            RuleFor(m => m.Files
+                            .GroupBy(f => f.FileName)
+                            .Select(gr => new { FileName = gr.Key, Count = gr.Count() }))
+                .Must(gr => gr.All(x => x.Count == 1))
+                .WithMessage((_, groups) => string.Format(ONLY_UNIQUE_FILE_NAMES_ALLOWED, string.Join(',', groups.Where(gr => gr.Count > 1).Select(gr => gr.FileName))));
 
             RuleForEach(m => m.Files)
                 .Must(f => f.ContentType == FileTypes.TEXT_XML)
