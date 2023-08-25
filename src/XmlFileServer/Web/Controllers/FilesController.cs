@@ -30,7 +30,7 @@ namespace Web.Controllers
             if (model?.Files is null)
                 return BadRequest("Invalid null object");
 
-            var fileProcessingTasks = model.Files
+            var jsonFileContentTasks = model.Files
                 .Select(async file =>
                 {
                     using var readStream = file.OpenReadStream();
@@ -41,16 +41,33 @@ namespace Web.Controllers
                     {
                         var json = await _serializationUtility.XmlToJsonAsync(readStream);
 
-                        return await _fileUtility.SaveFileAsync(fileName, json, model.OverwriteExisting);
+                        return new { FileName = file.FileName, Json = json, IsValidXml = true };
                     }
                     catch (XmlException)
                     {
-                        return new FileSaveResult { IsSuccess = false, FileName = file.FileName, Error = "Invalid xml content" };
+                        return new { FileName = file.FileName, Json = "", IsValidXml = false };
                     }
-
                 });
 
-            // process the files in parallel. As an alternative Task.Parallel library may be used
+            var jsonFileContents = await Task.WhenAll(jsonFileContentTasks);
+
+            var invalidFiles = jsonFileContents
+                .Where(f => !f.IsValidXml)
+                .Select(f => f.FileName)
+                .ToList();
+
+            if (invalidFiles.Any())
+            {
+                return BadRequest($"Invalid xml files: {string.Join(", ", invalidFiles)}");
+            }
+
+            var fileProcessingTasks = jsonFileContents
+                .Select(async file =>
+                {
+                    return await _fileUtility.SaveFileAsync(file.FileName, file.Json, model.OverwriteExisting);
+                });
+
+            // process the files in parallel. As an alternative approach Task.Parallel library may be used
             var fileResults = await Task.WhenAll(fileProcessingTasks);
 
             return Ok(fileResults);
