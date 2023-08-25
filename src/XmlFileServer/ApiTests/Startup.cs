@@ -13,6 +13,7 @@ namespace ApiTests
             services.AddScoped<ApiClient>();
             services.AddScoped<FormFileHelper>();
             services.AddSingleton<TestFilesHelper>();
+            services.AddSingleton<DirectoryHelper>();
 
             services.AddHttpClient("XmlFileServer", client =>
             {

@@ -1,30 +1,29 @@
-using ApiTests.Extensions;
 using ApiTests.Helpers;
 using Microsoft.AspNetCore.Http;
-using System.Net.Http.Headers;
-using System.Reflection;
-using System.Text;
 using Web.Models;
 
 namespace ApiTests
 {
-    public class FileUploadTests
+    public class FileUploadSuccessTests
     {
         private readonly ApiClient _apiClient;
         private readonly FormFileHelper _formFileHelper;
         private readonly TestAppSettings _settings;
         private readonly TestFilesHelper _testFilesHelper;
 
-        public FileUploadTests(
+        public FileUploadSuccessTests(
             ApiClient apiClient,
             FormFileHelper formFileHelper,
             TestAppSettings settings,
-            TestFilesHelper testFilesHelper)
+            TestFilesHelper testFilesHelper,
+            DirectoryHelper directoryHelper)
         {
             _apiClient = apiClient;
             _formFileHelper = formFileHelper;
             _settings = settings;
             _testFilesHelper = testFilesHelper;
+
+            directoryHelper.EmptyJsonOutputDirectory();
         }
 
         [Theory]
