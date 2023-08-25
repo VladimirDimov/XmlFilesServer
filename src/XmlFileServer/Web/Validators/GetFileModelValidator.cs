@@ -6,7 +6,7 @@ namespace Web.Validators
 {
     public class GetFileModelValidator : AbstractValidator<GetFileModel>
     {
-        private const string FILE_EXTENSION = "File extension must be .xml";
+        private const string FILE_EXTENSION = "File extension must be .json";
 
         public GetFileModelValidator()
         {
@@ -19,7 +19,7 @@ namespace Web.Validators
                 {
                     var extension = Path.GetExtension(fileName);
 
-                    return extension == CommonConstants.XML_FILE_EXTENSION;
+                    return extension == CommonConstants.JSON_FILE_EXTENSION;
                 })
                 .WithMessage(FILE_EXTENSION);
         }

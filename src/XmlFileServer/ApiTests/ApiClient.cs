@@ -30,6 +30,13 @@ namespace ApiTests
             return await _httpClient.PostAsync("Files", content);
         }
 
+        public async Task<HttpResponseMessage> FilesGetAsync(string fileName)
+        {
+            string uri = $"Files?fileName={fileName}";
+
+            return await _httpClient.GetAsync(uri);
+        }
+
         private StreamContent CreateFileContent(Stream stream, string name, string fileName, string contentType)
         {
             var fileContent = new StreamContent(stream);

@@ -2,6 +2,7 @@ using ApiTests.Extensions;
 using ApiTests.Helpers;
 using Microsoft.AspNetCore.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 using Web.Models;
 
@@ -9,13 +10,21 @@ namespace ApiTests
 {
     public class FileUploadTests
     {
-        private readonly ApiClient apiClient;
-        private readonly FormFileHelper formFileHelper;
+        private readonly ApiClient _apiClient;
+        private readonly FormFileHelper _formFileHelper;
+        private readonly TestAppSettings _settings;
+        private readonly TestFilesHelper _testFilesHelper;
 
-        public FileUploadTests(ApiClient apiClient, FormFileHelper formFileHelper)
+        public FileUploadTests(
+            ApiClient apiClient,
+            FormFileHelper formFileHelper,
+            TestAppSettings settings,
+            TestFilesHelper testFilesHelper)
         {
-            this.apiClient = apiClient;
-            this.formFileHelper = formFileHelper;
+            _apiClient = apiClient;
+            _formFileHelper = formFileHelper;
+            _settings = settings;
+            _testFilesHelper = testFilesHelper;
         }
 
         [Theory]
@@ -60,40 +69,42 @@ namespace ApiTests
                 },
                 overwriteExisting);
 
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public Task MultipleFilesWithRepeatedFileNameShouldReturnSuccessfulReponse(bool overwriteExisting)
-            => TestSuccessfulResponse(
-                new List<TestFileContent>
+        [Fact]
+        public async Task SingleFileUploadShouldStoreJsonWithExpectedContent()
+        {
+            var fileName = "mondial_1.7_MB.xml";
+            var createdFileName = "mondial_1.7_MB.json";
+            var xmlContent = await _testFilesHelper.ReadTestFileAsync(fileName);
+            var expectedJsonContent = await _testFilesHelper.ReadTestFileAsync(createdFileName);
+
+            var model = new FilesUploadModel
+            {
+                OverwriteExisting = true,
+                Files = new List<IFormFile>
                 {
-                    new TestFileContent
-                    {
-                        FileName = "testFile1.xml",
-                        Xml = "<a>1</a>"
-                    },
-                    new TestFileContent
-                    {
-                        FileName = "testFile1.xml",
-                        Xml = "<a>2</a>"
-                    },
-                    new TestFileContent
-                    {
-                        FileName = "testFile1.xml",
-                        Xml = "<a>3</a>"
-                    },
-                },
-                overwriteExisting);
+                    _formFileHelper.FromXmlString(xmlContent, "Files", fileName)
+                }
+            };
+
+            var response = await _apiClient.FilesPostAsync(model);
+
+            Assert.True(response.IsSuccessStatusCode);
+
+            var getFileResponse = await _apiClient.FilesGetAsync(createdFileName);
+            var responseContent = await getFileResponse.Content.ReadAsStringAsync();
+
+            Assert.Equal(expectedJsonContent, responseContent, ignoreWhiteSpaceDifferences: true);
+        }
 
         private async Task TestSuccessfulResponse(IEnumerable<TestFileContent> files, bool overwriteExisting)
         {
             var model = new FilesUploadModel
             {
                 OverwriteExisting = overwriteExisting,
-                Files = files.Select(f => formFileHelper.FromXmlString(f.Xml, "Files", f.FileName))
+                Files = files.Select(f => _formFileHelper.FromXmlString(f.Xml, "Files", f.FileName))
             };
 
-            var response = await apiClient.FilesPostAsync(model);
+            var response = await _apiClient.FilesPostAsync(model);
 
             Assert.True(response.IsSuccessStatusCode);
         }
