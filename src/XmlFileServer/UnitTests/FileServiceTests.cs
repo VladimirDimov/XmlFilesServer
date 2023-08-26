@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.Collections.Concurrent;
-using Web.Controllers;
+using System.Xml;
 using Web.Models;
 using Web.Services;
 using Web.Utilities;
@@ -50,8 +49,13 @@ namespace UnitTests
                 }
             });
 
-            _serializationUtilityMock.Verify(x => x.XmlToJsonAsync(It.IsAny<Stream>()), Times.Once);
-            _fileUtilityMock.Verify(x => x.SaveFileAsync(fileName, It.IsAny<string>(), overwriteExisting));
+            _serializationUtilityMock.Verify(
+                x => x.XmlToJsonAsync(It.IsAny<Stream>()),
+                Times.Once);
+
+            _fileUtilityMock.Verify(
+                x => x.SaveFileAsync(fileName, It.IsAny<string>(), overwriteExisting),
+                Times.Once);
         }
 
         [Fact]
@@ -139,6 +143,33 @@ namespace UnitTests
 
                 return Task.FromResult(timeFlags);
             });
+
+        [Fact]
+        public async Task SaveFileAsyncShouldNotCallSaveFileAsyncIfInvalidXml()
+        {
+            var fileName = "file1.xml";
+            var fileMock = new Mock<IFormFile>();
+
+            fileMock.Setup(x => x.FileName).Returns(fileName);
+
+            _serializationUtilityMock
+                .Setup(x => x.XmlToJsonAsync(It.IsAny<Stream>()))
+                .Throws<XmlException>();
+
+            bool overwriteExisting = true;
+
+            await _service.SaveFilesAsync(new FilesUploadModel
+            {
+                OverwriteExisting = overwriteExisting,
+                Files = new List<IFormFile>
+                {
+                    fileMock.Object
+                }
+            });
+
+            _serializationUtilityMock.Verify(x => x.XmlToJsonAsync(It.IsAny<Stream>()), Times.Once);
+            _fileUtilityMock.Verify(x => x.SaveFileAsync(fileName, It.IsAny<string>(), overwriteExisting), Times.Never);
+        }
 
         private async Task AssertParallelCallAsync(Func<Task<List<DateTime>>> arrange)
         {
