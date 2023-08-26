@@ -2,11 +2,11 @@
 
 namespace Web.Models
 {
-    public class FileCollectionSaveResult
+    public class ServiceResult<T>
     {
         private List<string> _validationErrors = new List<string>();
 
-        public FileSaveResult[] Files { get; internal set; }
+        public T Result { get; internal set; }
 
         public List<string> ValidationErrors => _validationErrors;
 

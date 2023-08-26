@@ -4,6 +4,7 @@ namespace Web.Services
 {
     public interface IFileService
     {
-        Task<FileCollectionSaveResult> SaveFilesAsync(FilesUploadModel model);
+        Task<ServiceResult<FileInfoModel>> GetFileAsync(string fileName);
+        Task<ServiceResult<FileSaveResult[]>> SaveFilesAsync(FilesUploadModel model);
     }
 }

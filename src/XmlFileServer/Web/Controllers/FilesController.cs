@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
 using System.Xml;
 using Web.Models;
 using Web.Services;
@@ -37,7 +38,7 @@ namespace Web.Controllers
             var fileSaveResult = await _fileService.SaveFilesAsync(model);
 
             if (fileSaveResult.ValidationErrors.Any())
-                return BadRequest(fileSaveResult.ValidationErrors.First());
+                return BadRequest(fileSaveResult.ValidationErrors);
 
             return Ok(fileSaveResult);
         }
@@ -45,14 +46,12 @@ namespace Web.Controllers
         [HttpGet(Name = "Get Files")]
         public async Task<IActionResult> GetAsync([FromQuery] GetFileModel model)
         {
-            var fileByteArray = await _fileUtility.GetFileByteArray(model.FileName);
+            var result = await _fileService.GetFileAsync(model.FileName);
 
-            if (fileByteArray is null)
-            {
-                return NotFound();
-            }
+            if (result.ValidationErrors.Any())
+                return BadRequest(result.ValidationErrors);
 
-            return File(fileByteArray, "text/json", model.FileName);
+            return File(result.Result.Bytes, result.Result.ContentType, result.Result.FileName);
         }
     }
 }

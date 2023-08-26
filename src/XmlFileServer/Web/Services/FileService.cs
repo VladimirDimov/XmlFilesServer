@@ -18,7 +18,7 @@ namespace Web.Services
             _logger = logger;
         }
 
-        public async Task<FileCollectionSaveResult> SaveFilesAsync(FilesUploadModel model)
+        public async Task<ServiceResult<FileSaveResult[]>> SaveFilesAsync(FilesUploadModel model)
         {
             var jsonFileContentTasks = model.Files
                 .Select(async file =>
@@ -41,7 +41,7 @@ namespace Web.Services
 
             var jsonFileContents = await Task.WhenAll(jsonFileContentTasks);
 
-            var result = new FileCollectionSaveResult();
+            var result = new ServiceResult<FileSaveResult[]>();
 
             var invalidFiles = jsonFileContents
                 .Where(f => !f.IsValidXml)
@@ -64,7 +64,25 @@ namespace Web.Services
             // process the files in parallel. As an alternative approach Task.Parallel library may be used
             var fileResults = await Task.WhenAll(fileProcessingTasks);
 
-            result.Files = fileResults;
+            result.Result = fileResults;
+
+            return result;
+        }
+
+        public async Task<ServiceResult<FileInfoModel>> GetFileAsync(string fileName)
+        {
+            var fileByteArray = await _fileUtility.GetFileByteArrayAsync(fileName);
+
+            var result = new ServiceResult<FileInfoModel>();
+
+            if (fileByteArray is null)
+            {
+                result.AddValidationError("File not found");
+
+                return result;
+            }
+
+            result.Result = new FileInfoModel(fileByteArray, "text/json", fileName);
 
             return result;
         }

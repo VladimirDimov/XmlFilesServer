@@ -62,10 +62,11 @@ namespace ApiTests
 
             var response = await _apiClient.FilesPostAsync(model);
             var content = await response.Content.ReadAsStringAsync();
+            var errorModel = JsonConvert.DeserializeObject<string[]>(content);
 
             Assert.False(response.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.Equal("Invalid xml files: file1.xml", content);
+            Assert.True(errorModel.Single() == "Invalid xml files: file1.xml");
         }
 
         [Fact]

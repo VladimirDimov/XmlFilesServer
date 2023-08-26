@@ -70,7 +70,7 @@ namespace Web.Utilities
             }
         }
 
-        public async Task<byte[]?> GetFileByteArray(string fileName)
+        public async Task<byte[]?> GetFileByteArrayAsync(string fileName)
         {
             var filePath = Path.Combine(fileStoreDirectory, fileName);
 
