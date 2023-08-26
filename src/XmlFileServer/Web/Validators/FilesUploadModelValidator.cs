@@ -15,6 +15,7 @@
         private const string FILE_NAME_LIMIT = "File name length must be between {0} and {1}";
         private const string FILE_EXTENSION = "File extension must be .xml";
         private const string FILE_NAME_CANNOT_BE_NULL = "File name cannot be null";
+        private const string INVALID_EMPTY_FILE = "Invalid empty file: {0}";
 
         public FilesUploadModelValidator(AppSettings settings)
         {
@@ -31,7 +32,7 @@
 
             RuleForEach(m => m.Files)
                 .Must(f => f.Length > 0)
-                .WithMessage((_, f) => $"Invalid empty file: {f.FileName}");
+                .WithMessage((_, f) => string.Format(INVALID_EMPTY_FILE, f.FileName));
 
             RuleFor(m => m.Files)
                 .Must(f => f.Count() <= 10)

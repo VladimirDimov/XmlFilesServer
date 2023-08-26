@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Web.Models;
 using Web.Services;
-using Web.Utilities;
 
 namespace Web.Controllers
 {
