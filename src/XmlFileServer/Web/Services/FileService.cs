@@ -1,5 +1,4 @@
 ﻿using System.Xml;
-using Web.Controllers;
 using Web.Models;
 using Web.Utilities;
 
@@ -9,9 +8,12 @@ namespace Web.Services
     {
         private readonly ISerializationUtility _serializationUtility;
         private readonly IFileUtility _fileUtility;
-        private readonly ILogger<FilesController> _logger;
+        private readonly ILogger<FileService> _logger;
 
-        public FileService(ISerializationUtility serializationUtility, IFileUtility fileUtility, ILogger<FilesController> logger)
+        public FileService(
+            ISerializationUtility serializationUtility,
+            IFileUtility fileUtility,
+            ILogger<FileService> logger)
         {
             _serializationUtility = serializationUtility;
             _fileUtility = fileUtility;
@@ -20,6 +22,9 @@ namespace Web.Services
 
         public async Task<ServiceResult<FileSaveResult[]>> SaveFilesAsync(FilesUploadModel model)
         {
+            if (model is null)
+                throw new ArgumentNullException(nameof(model));
+
             var jsonFileContentTasks = model.Files
                 .Select(async file =>
                 {
@@ -71,9 +76,15 @@ namespace Web.Services
 
         public async Task<ServiceResult<FileInfoModel>> GetFileAsync(string fileName)
         {
-            var fileByteArray = await _fileUtility.GetFileByteArrayAsync(fileName);
+            if (fileName is null)
+                throw new ArgumentNullException(nameof(fileName));
+
+            if (string.IsNullOrWhiteSpace(fileName))
+                throw new ArgumentException($"fileName cannot be empty value");
 
             var result = new ServiceResult<FileInfoModel>();
+
+            var fileByteArray = await _fileUtility.GetFileByteArrayAsync(fileName);
 
             if (fileByteArray is null)
             {

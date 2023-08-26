@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection;
-using System.Xml;
 using Web.Models;
 using Web.Services;
 using Web.Utilities;
@@ -11,20 +9,14 @@ namespace Web.Controllers
     [Route("[controller]")]
     public class FilesController : ControllerBase
     {
-        private readonly ISerializationUtility _serializationUtility;
-        private readonly IFileUtility _fileUtility;
         private readonly ILogger<FilesController> _logger;
         private readonly IFileService _fileService;
 
 
         public FilesController(
-            ISerializationUtility serializationUtility,
-            IFileUtility fileUtility,
-            ILogger<FilesController> logger,
-            IFileService fileService)
+            IFileService fileService,
+            ILogger<FilesController> logger)
         {
-            _serializationUtility = serializationUtility;
-            _fileUtility = fileUtility;
             _logger = logger;
             _fileService = fileService;
         }
