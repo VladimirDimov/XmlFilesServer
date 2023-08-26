@@ -1,5 +1,6 @@
 ﻿using FluentValidation.AspNetCore;
 using System.Reflection;
+using Web.Services;
 using Web.Utilities;
 
 namespace Web
@@ -15,6 +16,7 @@ namespace Web
             services.AddSwaggerGen();
 
             services.AddScoped<ISerializationUtility, SerializationUtility>();
+            services.AddScoped<IFileService, FileService>();
             services.AddSingleton<IFileUtility, FileUtility>();
         }
 

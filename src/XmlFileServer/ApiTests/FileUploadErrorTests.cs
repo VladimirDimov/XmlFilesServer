@@ -35,7 +35,6 @@ namespace ApiTests
         [InlineData(null, "<a>123</a>", "At least one file must be provided")]
         [InlineData("test_file_name.txt", "<a>123</a>", "File extension must be .xml")]
         [InlineData("test_file_name.xml", "", "Invalid empty file: test_file_name.xml")]
-        [InlineData("test_file_name.xml", "{some invalid xml content}", "")]
         public Task SingleInvalidFileShouldReturnErrorReponse(string fileName, string xml, string errorMessage)
             => TestErrorResponse(
                 new List<TestFileContent>
@@ -48,6 +47,26 @@ namespace ApiTests
                 },
                 true,
                 errorMessage);
+
+        [Fact]
+        public async Task InvalidXmlContentShouldReturnProperError()
+        {
+            var model = new FilesUploadModel
+            {
+                OverwriteExisting = true,
+                Files = new List<IFormFile>
+                {
+                    _formFileHelper.FromXmlString("{invalid xml content}", "Files", "file1.xml"),
+                }
+            };
+
+            var response = await _apiClient.FilesPostAsync(model);
+            var content = await response.Content.ReadAsStringAsync();
+
+            Assert.False(response.IsSuccessStatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal("Invalid xml files: file1.xml", content);
+        }
 
         [Fact]
         public async Task DuplicateFileNamesShouldReturnPropertError()
