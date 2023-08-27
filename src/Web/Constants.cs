@@ -8,6 +8,11 @@
             public const string JSON_FILE_EXTENSION = ".json";
         }
 
+        public class ErrorMessages
+        {
+            public const string UNHANDLED_EXCEPTION = "Unhandled exception";
+        }
+
         public class MimeTypes
         {
             public const string TEXT_XML = "text/xml";

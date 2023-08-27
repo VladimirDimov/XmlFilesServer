@@ -9,31 +9,34 @@ namespace Web.Utilities
 {
     public class FileUtility : IFileUtility
     {
-        private ConcurrentDictionary<string, SemaphoreSlim> filesLock = new ConcurrentDictionary<string, SemaphoreSlim>();
-        private readonly string fileStoreDirectory;
+        private ConcurrentDictionary<string, SemaphoreSlim> _filesLock = new ConcurrentDictionary<string, SemaphoreSlim>();
+        private readonly string _fileStoreDirectory;
+        private readonly ILogger<FileUtility> _logger;
 
-        public FileUtility(AppSettings appSettings)
+        public FileUtility(AppSettings appSettings, ILogger<FileUtility> logger)
         {
             var rootDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            fileStoreDirectory = Path.Combine(rootDirectory, appSettings.FileStoreRelativePath);
+            _fileStoreDirectory = Path.Combine(rootDirectory, appSettings.FileStoreRelativePath);
 
-            if (!Directory.Exists(fileStoreDirectory))
+            if (!Directory.Exists(_fileStoreDirectory))
             {
-                Directory.CreateDirectory(fileStoreDirectory);
+                Directory.CreateDirectory(_fileStoreDirectory);
             }
+
+            _logger = logger;
         }
 
         public async Task<FileSaveResult> SaveFileAsync(string fileName, string content, bool overwrite)
         {
             var jsonFileName = FileNameToJson(fileName);
-            var filePath = Path.Combine(fileStoreDirectory, jsonFileName);
+            var filePath = Path.Combine(_fileStoreDirectory, jsonFileName);
 
             var result = new FileSaveResult
             {
                 FileName = jsonFileName
             };
 
-            var semaphore = filesLock.GetOrAdd(filePath, new SemaphoreSlim(1, 1));
+            var semaphore = _filesLock.GetOrAdd(filePath, new SemaphoreSlim(1, 1));
 
             await semaphore.WaitAsync();
 
@@ -60,6 +63,8 @@ namespace Web.Utilities
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, ErrorMessages.UNHANDLED_EXCEPTION);
+
                 result.IsSuccess = false;
                 result.Error = "Unexpected error occured";
 
@@ -73,9 +78,9 @@ namespace Web.Utilities
 
         public async Task<byte[]?> GetFileByteArrayAsync(string fileName)
         {
-            var filePath = Path.Combine(fileStoreDirectory, fileName);
+            var filePath = Path.Combine(_fileStoreDirectory, fileName);
 
-            var semaphore = filesLock.GetOrAdd(filePath, new SemaphoreSlim(1, 1));
+            var semaphore = _filesLock.GetOrAdd(filePath, new SemaphoreSlim(1, 1));
             await semaphore.WaitAsync();
 
             try
