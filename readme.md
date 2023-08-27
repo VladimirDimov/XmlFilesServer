@@ -51,7 +51,7 @@ In case of validation error status 400 (Bad request) with proper validation mess
 
 ## Tests
 
-    To run the test make sure that in the `appsettings.json` of the ApiTests project the correct file storing location is set. It's needed, because before each test, the location is being emptied.
+To run the test make sure that in the `appsettings.json` of the ApiTests project the correct file storing location is set. It's needed, because before each test, the location is being emptied.
 
 The default configured location is in `/files` folder, relative to the API executing asssembly location.
 
