@@ -197,6 +197,11 @@ namespace UnitTests
 
             while (timeFlags.Count < numberOfFiles)
             {
+                /* 
+                 * a workaround to await the mocked asynchronous callback
+                 * this is needed, because the callback method in Moq accepts only Action, 
+                 * which by default is not awaited
+                 */
             }
 
             var maxTimeDifference = timeFlags.Max() - timeFlags.Min();
