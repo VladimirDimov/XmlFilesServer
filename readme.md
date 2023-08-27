@@ -12,6 +12,8 @@ All files within a single request are processed in parallel.
 
 All files operation are designed to work properly in a concurrent environment. So for example if two users are uploading a file with the same name simultaniously, there should not be an error caused by multiple processes operating on a same resource.
 
+The above considerations are covered in the api tests.
+
 ## How to use
 
 1. Host the application locally

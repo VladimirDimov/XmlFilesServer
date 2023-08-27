@@ -31,7 +31,7 @@ namespace ApiTests
         [InlineData(true, "testFile1.a.b.c.xml")]
         [InlineData(false, "testFile1......xml")]
         public Task SingleFileUploadShouldReturnSuccessfulReponse(bool overwriteExisting, string fileName)
-            => AssertSuccessfulResponse(
+            => AssertSuccessfulResponseAsync(
                 new List<TestFileContent>
                 {
                     new TestFileContent
@@ -46,7 +46,7 @@ namespace ApiTests
         [InlineData(true)]
         [InlineData(false)]
         public Task MultipleFilesUploadShouldReturnSuccessfulReponse(bool overwriteExisting)
-            => AssertSuccessfulResponse(
+            => AssertSuccessfulResponseAsync(
                 new List<TestFileContent>
                 {
                     new TestFileContent
@@ -110,7 +110,7 @@ namespace ApiTests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
-        private async Task AssertSuccessfulResponse(IEnumerable<TestFileContent> files, bool overwriteExisting)
+        private async Task AssertSuccessfulResponseAsync(IEnumerable<TestFileContent> files, bool overwriteExisting)
         {
             var model = new FilesUploadModel
             {
@@ -214,6 +214,25 @@ namespace ApiTests
                    filesVersion2,
                    new[] { jsonFile1ContentVersion1, jsonFile2ContentVersion1, jsonFile3ContentVersion1 },
                    false);
+        }
+
+        [Fact]
+        public async Task ShouldWorkProperlyIfMultipleParallelRequestsAreUploadingTheSameFileName()
+        {
+            var fileName = "file1.xml";
+
+            var fileUploadTasks = Enumerable.Range(1, 20).Select(_ => AssertSuccessfulResponseAsync(
+                 new List<TestFileContent>
+                 {
+                    new TestFileContent
+                    {
+                        FileName = fileName,
+                        Xml = "<a>123</a>"
+                    }
+                 },
+                 true));
+
+            await Task.WhenAll(fileUploadTasks);
         }
 
         private async Task AssertJsonContentAsync(IEnumerable<TestFileContent> files, IEnumerable<string> expectedJsonContent, bool overwriteExisting)
