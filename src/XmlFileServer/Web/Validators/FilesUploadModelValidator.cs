@@ -78,8 +78,8 @@
                 .WithMessage(string.Format(FILE_NAME_LIMIT, fileSettings.MinFileNameLength, fileSettings.MaxFileNameLength));
 
             RuleForEach(m => m.Files)
-                .Must(f => f.ContentType == FileTypes.TEXT_XML)
-                .WithMessage((_, f) => string.Format(INVALID_FILE_TYPE, f.ContentType, FileTypes.TEXT_XML));
+                .Must(f => f.ContentType == MimeTypes.TEXT_XML)
+                .WithMessage((_, f) => string.Format(INVALID_FILE_TYPE, f.ContentType, MimeTypes.TEXT_XML));
         }
     }
 }

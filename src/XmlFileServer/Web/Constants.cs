@@ -8,7 +8,7 @@
             public const string JSON_FILE_EXTENSION = ".json";
         }
 
-        public class FileTypes
+        public class MimeTypes
         {
             public const string TEXT_XML = "text/xml";
         }
