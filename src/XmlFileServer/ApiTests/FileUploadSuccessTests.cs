@@ -10,19 +10,16 @@ namespace ApiTests
     {
         private readonly ApiClient _apiClient;
         private readonly FormFileHelper _formFileHelper;
-        private readonly TestAppSettings _settings;
         private readonly TestFilesHelper _testFilesHelper;
 
         public FileUploadSuccessTests(
             ApiClient apiClient,
             FormFileHelper formFileHelper,
-            TestAppSettings settings,
             TestFilesHelper testFilesHelper,
             DirectoryHelper directoryHelper)
         {
             _apiClient = apiClient;
             _formFileHelper = formFileHelper;
-            _settings = settings;
             _testFilesHelper = testFilesHelper;
 
             directoryHelper.EmptyJsonOutputDirectory();
