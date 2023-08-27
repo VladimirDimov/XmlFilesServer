@@ -11,6 +11,9 @@
 
         public void EmptyJsonOutputDirectory()
         {
+            if (!Directory.Exists(_settings.FileStoreLocation))
+                return;
+
             var retry = 0;
 
             while (retry < 3)
