@@ -1,11 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Web.Models
 {
     public class FilesUploadModel
     {
-        public bool OverwriteExisting { get; set; } = false;
+        [Required]
+        [DefaultValue(true)]
+        public bool OverwriteExisting { get; set; }
 
+        [Required]
         public IEnumerable<IFormFile>? Files { get; set; }
     }
 }
