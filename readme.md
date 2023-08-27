@@ -63,6 +63,8 @@ Some end-to-end API test are added as well to cover the main success and error s
 
 For both types of tests xUnit is used. For the unit tests Moq is used to mock the dependencies behavior.
 
+![alt](./resources/api-tests.PNG)
+
 ### Main Nuget libraries used
 
 1. Newtonsoft.Json - used for serialization/deserialization and convertion between xml and json
